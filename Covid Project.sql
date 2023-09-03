@@ -61,7 +61,7 @@ ORDER BY Id;
 
 SELECT Id,location, date, total_cases, new_cases, total_deaths, population
 FROM CovidDeaths
-Order by 1
+Order by 1;
 
 /* Total Cases vs Total Deaths Shows likelihood of death if contracted covid in my country */
 
@@ -88,9 +88,9 @@ WHERE continent is not null
 GROUP BY location
 ORDER BY TotalDeathCount desc;
 
-/* Let's look at Vaccinations file */
+/* Let's look at the Vaccinations file */
 
-SELECT * FROM CovidVaccinations
+SELECT * FROM CovidVaccinations;
 
 /* JOIN Deaths and Vaccinations tables */
 
@@ -102,14 +102,14 @@ JOIN covidvaccinations as vaccinations
 ON deaths.location = vaccinations.location
 AND deaths.date = vaccinations.date
 WHERE deaths.continent is not null
-ORDER BY 1, 2, 3
+ORDER BY 1, 2, 3;
 
 /* Total Population vs Vaccinations */
 
 -- Must cast new_vaccinations as BIGINT because it exceeds max int.
 
 SELECT deaths.Id, deaths.continent, deaths.location, deaths.date, deaths.population, vaccinations.new_vaccinations, SUM(cast(vaccinations.new_vaccinations as bigint)) 
-OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as RollingPeopleVaccinated
+OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as RollingPeopleVaccinated;
 
 -- , (RollingPeopleVaccinated/population)*100
 
@@ -158,7 +158,7 @@ RollingPeopleVaccinated numeric);
 Insert into PercentPopulationVaccinated
 SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vaccinations.new_vaccinations , SUM(cast(vaccinations.new_vaccinations as bigint)) 
 OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as RollingPeopleVaccinated
-FROM coviddeaths as deaths
+FROM coviddeaths as deaths;
 
 JOIN covidvaccinations as vaccinations
 ON deaths.location = vaccinations.location
@@ -166,13 +166,13 @@ AND deaths.date = vaccinations.date;
 
 SELECT location,new_vaccinations,date,(RollingPeopleVaccinated/population)*100 as Vacinated_Population
 FROM PercentPopulationVaccinated
-Order by 1,2,3 
+Order by 1,2,3;
 
 /* Creating View to store data for later visualizations */
 
 CREATE VIEW PercentPopulationVaccinated as
 SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vaccinations.new_vaccinations , SUM(cast(vaccinations.new_vaccinations as bigint)) 
-OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as RollingPeopleVaccinated
+OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as RollingPeopleVaccinated;
 
 -- , (RollingPeopleVaccinated/population)*100
 
@@ -180,8 +180,8 @@ FROM coviddeaths as deaths
 JOIN covidvaccinations as vaccinations
 ON deaths.location = vaccinations.location
 AND deaths.date = vaccinations.date
-WHERE deaths.continent is not null
+WHERE deaths.continent is not null;
 
 /* Let's see the saved VIEW. */
 
-`SELECT * FROM PercentPopulationVaccinated`
+`SELECT * FROM PercentPopulationVaccinated;
